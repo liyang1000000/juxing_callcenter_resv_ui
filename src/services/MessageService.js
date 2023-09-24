@@ -26,14 +26,14 @@ const getMessage = (id) => {
   return http.get(`/messages/${id}`);
 }
 
-const getMessages = (message_group=null, language=null, message_name=null) => {
+const getMessages = (message_group=null, message_name=null) => {
   const params = {};
   if (message_group) {
     params.message_group = message_group;
   }
-  if (language) {
-    params.language = language;
-  }
+  // if (language) {
+  //   params.language = language;
+  // }
   if (message_name) {
     params.message_name = message_name;
   }
@@ -60,6 +60,11 @@ const getSentMessages = () => {
   return http.get(`/messages/sent-messages/all`);
 }
 
+const sendEmail = (data) => {
+  return http.post(`/messages/public/send-email`, data);
+}
+
+
 export const MessageService = {
   getMessage,
   getMessages,
@@ -70,5 +75,6 @@ export const MessageService = {
   updateMessageToken,
   createMessageToken,
   sendMessage,
-  getSentMessages
+  getSentMessages,
+  sendEmail
 };

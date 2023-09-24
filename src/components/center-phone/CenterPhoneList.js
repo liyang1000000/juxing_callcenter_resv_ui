@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AuthService, CenterPhoneService } from "../../services";
 
 const CenterPhoneList = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [phones, setPhones] = useState([]);
   const [keyword, setKeyword] = useState('');
 

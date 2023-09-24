@@ -32,7 +32,7 @@ const MessageTokenEditor = () => {
   }, [currentMessageToken])
 
   const redirectTo = () => {
-		navigate(`/admin`);
+		navigate(`/customers`);
   }
 
 	const saveMessageToken = () => {

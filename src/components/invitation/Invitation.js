@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { CustomerService, InvitationService } from "../../services";
+import { CustomerService, InvitationService, ReservationService } from "../../services";
 import {useParams} from 'react-router-dom';
 
 const Invitation = () => {
@@ -86,8 +86,7 @@ const Invitation = () => {
                 {`${new Date(invitation?.resv_time).toLocaleDateString()} ${Math.trunc(invitation?.start_time)}:${((invitation?.start_time-Math.trunc(invitation?.start_time)))*60 === 0 ? '00': (invitation?.start_time-Math.trunc(invitation?.start_time))*60 }`}
               </div>
               <div className="col-md-12 mb-4">Party for {invitation?.party_size}</div>
-              <div className="col-md-12 mb-4">Room {invitation?.room}</div>
-              <div className="col-md-12 mb-4">Room Rate: {invitation?.room_price}</div>
+              <div className="col-md-12 mb-4">Room: {ReservationService.getRoomLabel(invitation?.room)}</div>
               <div className="col-md-12 mb-4">Duration: {invitation?.duration} Hrs</div>
               <div className="col-md-12 mb-4">
                 <div>Date of Birth(MM/DD/YYYY):</div> <input type="text" value={birthday || ''} onChange={e => setBirthday(e.target.value)}/>

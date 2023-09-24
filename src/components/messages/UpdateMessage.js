@@ -71,7 +71,7 @@ const UpdateMessage = () => {
             <div className="col-md-4 mb-4">
               <div>Message Name:</div> <input type="text" value={messageName || ''} onChange={e => setMessageName(e.target.value)}/>
             </div>
-        <div className="col-md-4 mb-4">
+        {/* <div className="col-md-4 mb-4">
           <div>Language:</div>
             <select value={language} onChange={e => setLanguage(e.target.value)}>
               <option value=""></option>
@@ -80,7 +80,7 @@ const UpdateMessage = () => {
             <option value="Vietnamese">Vietnamese</option>
             <option value="Korean">Korean</option>
           </select>
-            </div>
+            </div> */}
             <div className="col-md-12 mb-4">
           <div>Message Title:</div> <input type="text" value={messageTitle || ''} onChange={e => setMessageTitle(e.target.value)}/>
             </div>

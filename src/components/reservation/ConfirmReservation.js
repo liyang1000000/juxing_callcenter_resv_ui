@@ -27,10 +27,10 @@ const ConfirmReservation = () => {
   
 
   useEffect(() => {
-    MessageService.getMessages(3, 'English', 'TOS').then(data => {
+    MessageService.getMessages(3, 'TOS').then(data => {
       setTOS(data?.data[0]);
     });
-    MessageService.getMessages(2, 'English', 'Invitation').then(data => {
+    MessageService.getMessages(2, 'Invitation').then(data => {
       setInviteEmail(data?.data[0]);
     });
     if (!reservation) {
@@ -105,6 +105,21 @@ const ConfirmReservation = () => {
   const sendInvitations = () => {
     invitations?.forEach(invite => {
       InvitationService.createInvitation(invite).then((savedInvite) => {
+        const data = {
+          emailTemplate: {
+            message_title: inviteEmail?.message_title,
+            message_body: inviteEmail?.message_body?.replace('{invitationLink}', `<a href=${window.location.origin}/invitation/${savedInvite?.data?.id}>${window.location.origin}/invitation/${savedInvite?.data?.id}</a>`),
+          },
+          from: 'no-reply@wokandrolldc.com',
+          to: invite?.invite_email
+        }
+        MessageService.sendEmail(data).then(() => {
+          ReservationService.updateReservation(reservation?.id, Object.assign({}, reservation, {invitation_sent: true})).then(() => {
+            ReservationService.getReservationsByUUID(uuid).then(data => {
+              setReservation(data?.data[0]);
+            })
+          });
+        });
         // Email.send({
         //   Host: "smtp.gmail.com",
         //   Username: hostEmail,
@@ -114,11 +129,6 @@ const ConfirmReservation = () => {
         //   Subject: inviteEmail?.message_title,
         //   Body: inviteEmail?.message_body?.replace('{invitationLink}', `${window.location.origin}/invitation/${savedInvite?.data?.id}`),
         // }).then(() => console.log(`Email sent to ${invite?.invite_email}`)).catch((err) => console.log(err));
-      })
-    });
-    ReservationService.updateReservation(reservation?.id, Object.assign({}, reservation, {invitation_sent: true})).then(() => {
-      ReservationService.getReservationsByUUID(uuid).then(data => {
-        setReservation(data?.data[0]);
       })
     });
   }
@@ -212,7 +222,7 @@ const ConfirmReservation = () => {
                 {`${new Date(reservation?.resv_time).toLocaleDateString()} ${Math.trunc(reservation?.start_time)}:${((reservation?.start_time-Math.trunc(reservation?.start_time)))*60 === 0 ? '00': (reservation?.start_time-Math.trunc(reservation?.start_time))*60 }`}
               </div>
               <div className="col-md-12 mb-4">Party for {reservation?.party_size}</div>
-              <div className="col-md-12 mb-4">Room {reservation?.room}</div>
+              <div className="col-md-12 mb-4">Room: {ReservationService.getRoomLabel(reservation?.room)}</div>
               <div className="col-md-12 mb-4">Room Rate: {reservation?.room_price}</div>
               <div className="col-md-12 mb-4">Duration: {reservation?.duration} Hrs</div>
               <div className="col-md-12 mb-4">

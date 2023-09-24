@@ -39,12 +39,8 @@ const ViewCustomer = () => {
   const sendMessage = (resv) => {
     const uuid = resv?.resv_uuid;
     const phone = resv?.tel;
-    console.log(123123);
     setShowSuccessInfo(false);
-    MessageService.getMessages(1, 'English', 'Confirm').then((msgs) => {
-      console.log(msgs.data[0]);
-      console.log(msgs.data[0]?.message_body.replace('{confimLink}', `${window.location.origin}/resv-confirm/${uuid}`));
-      console.log(phone);
+    MessageService.getMessages(1, 'Confirm').then((msgs) => {
       if (msgs.data) {
         const data = {
           messages: [
@@ -55,13 +51,15 @@ const ViewCustomer = () => {
             }
           ]
         }
-        // MessageService.sendMessage(data);
-        ReservationService.updateReservation(resv?.id, Object.assign({}, resv, {message_sent: true, message_sent_time: new Date()})).then(() => {
+        MessageService.sendMessage(data).then(() => {
+          ReservationService.updateReservation(resv?.id, Object.assign({}, resv, {message_sent: true, message_sent_time: new Date()})).then(() => {
           ReservationService.getReservationsByUserInfo(phone, resv.name).then((resvs) => {
             setReservations(resvs?.data);
             setShowSuccessInfo(true);
           });
         })
+        });
+        
       }
     })
 
@@ -88,10 +86,10 @@ const ViewCustomer = () => {
         return 'Canceled';
       } else {
         if (statusCode === 1) {
-          if ((Math.abs(new Date() - new Date(date)) / 36e5) >= 24) {
+          if ((new Date() - new Date(date)) / 36e5 >= 24) {
             return 'Past Reservation'
           } else {
-            if (messageSent && (Math.abs(new Date() - new Date(messageSentTime)) / 36e5) > 48) {
+            if (messageSent && ((new Date() - new Date(messageSentTime)) / 36e5) > 48) {
               return 'Link Expired';
             } else {
               if (!messageSent) {
@@ -143,7 +141,7 @@ const ViewCustomer = () => {
                   <tr key={resv?.id}>
                     <td>{`${new Date(resv?.resv_time).toLocaleDateString()} ${Math.trunc(resv?.start_time)}:${((resv?.start_time-Math.trunc(resv?.start_time)))*60 === 0 ? '00': (resv?.start_time-Math.trunc(resv?.start_time))*60 }`}</td>
                     <td>{resv?.party_size}</td>
-                    <td>{resv?.room}</td>
+                    <td>{ReservationService.getRoomLabel(resv?.room)}</td>
                     <td>{resv?.duration} Hours</td>
                     <td>{resv?.room_price}</td>
                     <td>{resv?.note}</td>
