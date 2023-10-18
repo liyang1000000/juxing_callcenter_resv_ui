@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthService, MessageService } from "../../services";
 import DatePicker from "react-datepicker";
 
-const SentMessageList = () => {
+const SentMessageList = ({enableMenu}) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [datePicked, setDatePicked] = useState(new Date());
@@ -14,6 +14,9 @@ const SentMessageList = () => {
       AuthService.logout();
       navigate(`/login`);
     }
+    if (AuthService.isAdmin()) {
+      enableMenu();
+    }
     MessageService.getSentMessages().then(data => {
       console.log(data);
       setMessages(data.data);
@@ -23,7 +26,7 @@ const SentMessageList = () => {
   
 
   const redirectToAdmin = () => {
-    navigate(`/customers`)
+    navigate(`/reservations/list`)
   }
 
   

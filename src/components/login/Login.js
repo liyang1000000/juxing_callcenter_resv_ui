@@ -8,7 +8,7 @@ const Login = ({}) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem('user') && localStorage.getItem('token') && AuthService.isAdmin()) {
-      navigate('/employees');
+      navigate('/reservations/list');
     }
   }, []);
   const loginAndRedirect = () => {
@@ -18,7 +18,7 @@ const Login = ({}) => {
     }).then(({data}) => {
       localStorage.setItem('token', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data));
-      navigate('/employees');
+      navigate('/reservations/list');
     }).catch((error) => {
       window.alert(error?.response?.data?.message);
       console.log(error);

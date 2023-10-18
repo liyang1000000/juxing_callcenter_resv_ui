@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService, CenterPhoneService } from "../../services";
 
-const CreateCenterPhone = () => {
+const CreateCenterPhone = ({enableMenu}) => {
   const navigate = useNavigate();
 	const [phoneTitle, setPhoneTitle] = useState('');
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -13,11 +13,14 @@ const CreateCenterPhone = () => {
       AuthService.logout();
       navigate(`/login`);
     }
+    if (AuthService.isAdmin()) {
+      enableMenu();
+    }
   }, []);
 
 
   const redirectTo = () => {
-    navigate(`/customers`);
+    navigate(`/reservations/list`);
   }
 
 	const savePhone = () => {

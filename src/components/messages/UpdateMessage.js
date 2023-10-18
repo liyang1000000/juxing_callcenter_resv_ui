@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthService, MessageService } from "../../services";
 
-const UpdateMessage = () => {
+const UpdateMessage = ({enableMenu}) => {
   const navigate = useNavigate();
   const params = useParams();
 	const [messageGroup, setMessageGroup] = useState();
@@ -17,6 +17,9 @@ const UpdateMessage = () => {
       window.alert('You haven\'t login yet OR this user does not have access to this page. Please change a dispatcher or admin account to login.')
       AuthService.logout();
       navigate(`/login`);
+    }
+    if (AuthService.isAdmin()) {
+      enableMenu();
     }
     if (!currentMessage) {
       MessageService.getMessage(params.id).then(data => {
@@ -66,6 +69,7 @@ const UpdateMessage = () => {
             <option value=""></option>
             <option value={1}>Text Message</option>
             <option value={2}>Email</option>
+            <option value={3}>Term Of Service</option>
           </select>
             </div>
             <div className="col-md-4 mb-4">

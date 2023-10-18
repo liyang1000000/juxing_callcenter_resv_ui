@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService, MessageService } from "../../services";
 
-const CreateMessage = () => {
+const CreateMessage = ({enableMenu}) => {
   const navigate = useNavigate();
   useEffect(() => {
 	if (!AuthService.isAdmin()) {
@@ -10,6 +10,9 @@ const CreateMessage = () => {
 		AuthService.logout();
 		navigate(`/login`);
 	  }
+    if (AuthService.isAdmin()) {
+      enableMenu();
+    }
   }, []);
   const [messageGroup, setMessageGroup] = useState();
   const [messageName, setMessageName] = useState('');

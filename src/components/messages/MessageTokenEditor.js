@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthService, MessageService } from "../../services";
 
-const MessageTokenEditor = () => {
+const MessageTokenEditor = ({enableMenu}) => {
   const navigate = useNavigate();
   const params = useParams();
 	const [messageToken, setMessageToken] = useState('');
@@ -14,6 +14,9 @@ const MessageTokenEditor = () => {
       window.alert('You haven\'t login yet OR this user does not have access to this page. Please change a dispatcher or admin account to login.')
       AuthService.logout();
       navigate(`/login`);
+    }
+    if (AuthService.isAdmin()) {
+      enableMenu();
     }
     if (!currentMessageToken) {
       MessageService.getSendMessageToken().then(data => {
@@ -32,7 +35,7 @@ const MessageTokenEditor = () => {
   }, [currentMessageToken])
 
   const redirectTo = () => {
-		navigate(`/customers`);
+		navigate(`/reservations/list`);
   }
 
 	const saveMessageToken = () => {

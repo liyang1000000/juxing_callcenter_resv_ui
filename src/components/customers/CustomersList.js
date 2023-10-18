@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthService, CustomerService } from "../../services";
 
 
-const CustomersList = () => {
+const CustomersList = ({enableMenu}) => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [keyword, setKeyword] = useState('');
@@ -15,6 +15,10 @@ const CustomersList = () => {
       AuthService.logout();
       navigate(`/login`);
     }
+    if (AuthService.isAdmin()) {
+      enableMenu();
+    }
+    
     CustomerService.getAllCustomers().then((data) => {
       setCustomers(data.data.sort((a, b) => a.lastname > b.lastname ? 1: -1));
     })
@@ -23,13 +27,15 @@ const CustomersList = () => {
   const goToView = (id) => {
     navigate(`/customers/${id}`)
   }
-
+  const redirectTo = () => {
+    navigate(`/reservations/list`)
+  }
   
   return (
     <>
       <div className="list row mb-4">
         <div className="col-md-12 text-primary">
-           <h5>All Customers </h5> 
+           <h5>All Customers <button className="btn btn-link btn-sm" onClick={() => {redirectTo()}}>Back</button></h5> 
         </div>
       </div>
       <div className="list row mb-4">

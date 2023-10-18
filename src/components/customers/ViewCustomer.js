@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuthService, CustomerService, ReservationService, MessageService } from "../../services";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-const ViewCustomer = () => {
+import axios from 'axios';
+const ViewCustomer = ({enableMenu}) => {
   const navigate = useNavigate();
 
   const urlParams = useParams();
@@ -23,6 +24,9 @@ const ViewCustomer = () => {
       window.alert('You haven\'t login yet OR this user does not have access to this page. Please change an admin account to login.')
       AuthService.logout();
       navigate(`/login`);
+    }
+    if (AuthService.isAdmin()) {
+      enableMenu();
     }
     if (!currentCustomer) {
       CustomerService.getCustomer(urlParams.id).then((data) => {
@@ -75,7 +79,8 @@ const ViewCustomer = () => {
   }
 
   const getStatus = (resv) => {
-    const date = resv?.resv_time;
+    const date = resv?.resv_time_abs;
+    const start = resv?.start_time;
     const statusCode = resv?.status; 
     const messageSent = resv?.message_sent;
     const messageSentTime = resv?.message_sent_time;
@@ -86,7 +91,7 @@ const ViewCustomer = () => {
         return 'Canceled';
       } else {
         if (statusCode === 1) {
-          if ((new Date() - new Date(date)) / 36e5 >= 24) {
+          if ((new Date() - (new Date(date + start * 36e5 + new Date().getTimezoneOffset() * 60 * 1000))) / 36e5 >= 24) {
             return 'Past Reservation'
           } else {
             if (messageSent && ((new Date() - new Date(messageSentTime)) / 36e5) > 48) {
@@ -132,6 +137,7 @@ const ViewCustomer = () => {
                 <th>Special Note</th>
                 <th>Status</th>
                 <th>Encrypted CC</th>
+                <th>Client Confirmation Link</th>
               </tr>
               
             </thead>
@@ -139,7 +145,7 @@ const ViewCustomer = () => {
               {
                 reservations?.map(resv => (
                   <tr key={resv?.id}>
-                    <td>{`${new Date(resv?.resv_time).toLocaleDateString()} ${Math.trunc(resv?.start_time)}:${((resv?.start_time-Math.trunc(resv?.start_time)))*60 === 0 ? '00': (resv?.start_time-Math.trunc(resv?.start_time))*60 }`}</td>
+                    <td>{`${resv?.resv_time?.split('T')[0]} ${Math.trunc(resv?.start_time)}:${((resv?.start_time-Math.trunc(resv?.start_time)))*60 === 0 ? '00': (resv?.start_time-Math.trunc(resv?.start_time))*60 }`}</td>
                     <td>{resv?.party_size}</td>
                     <td>{ReservationService.getRoomLabel(resv?.room)}</td>
                     <td>{resv?.duration} Hours</td>
@@ -147,6 +153,7 @@ const ViewCustomer = () => {
                     <td>{resv?.note}</td>
                     <td>{getStatus(resv)}</td>
                     <td>{ resv?.card_number?.length > 0 && <Button variant="link" size="sm" onClick={() => showCardInfo(resv)}>View</Button>}</td>
+                    <td><a target="_blank" href={`${window.location.origin}/resv-confirm/${resv?.resv_uuid}`}>{ `${window.location.origin}/resv-confirm/${resv?.resv_uuid}` }</a></td>
                   </tr>)
                 )
               }

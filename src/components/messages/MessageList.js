@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService, MessageService } from "../../services";
 
-const MessageList = () => {
+const MessageList = ({enableMenu}) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
 
@@ -11,6 +11,9 @@ const MessageList = () => {
       window.alert('You haven\'t login yet OR this user does not have access to this page. Please change a dispatcher or admin account to login.')
       AuthService.logout();
       navigate(`/login`);
+    }
+    if (AuthService.isAdmin()) {
+      enableMenu();
     }
     MessageService.getMessages().then(data => {
       console.log(data);
@@ -21,7 +24,7 @@ const MessageList = () => {
   
 
   const redirectToAdmin = () => {
-    navigate(`/customers`)
+    navigate(`/reservations/list`)
   }
 
   const goToEdit = (id) => {
